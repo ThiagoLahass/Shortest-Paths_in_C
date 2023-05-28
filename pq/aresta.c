@@ -1,15 +1,13 @@
 #include"aresta.h"
 
-struct aresta
-{
+struct aresta{
     int origem;
     int destino;
     double distancia;
     double velocidade;
 };
 
-
-int aresta_retornaOrigem(Aresta *aresta, int posicao){
+/*int aresta_retornaOrigem(Aresta *aresta, int posicao){
     return aresta[posicao].origem;
 }
 int aresta_retornaDestino(Aresta *aresta, int posicao){
@@ -20,11 +18,23 @@ double aresta_retornaDistancia(Aresta *aresta, int posicao){
 }
 double aresta_retornaVelocidade(Aresta *aresta, int posicao){
     return aresta[posicao].velocidade;
+}*/
+
+
+int aresta_retornaOrigem(Aresta* aresta){
+    return aresta->origem;
+}
+int aresta_retornaDestino(Aresta* aresta){
+    return aresta->destino;
+}
+double aresta_retornaDistancia(Aresta* aresta){
+    return aresta->distancia;
+}
+double aresta_retornaVelocidade(Aresta* aresta){
+    return aresta->velocidade;
 }
 
-
 Aresta* aresta_LeArquivo(FILE *file, int quantidadeArestas, double velocidadeInicial){
-    
     Aresta* lista_aresta = malloc(quantidadeArestas * sizeof(Aresta));    //lista struct aresta
 
     char *line = malloc(50*sizeof(char)); //recebe todos os dados de uma linha
@@ -37,6 +47,7 @@ Aresta* aresta_LeArquivo(FILE *file, int quantidadeArestas, double velocidadeIni
         lista_aresta[i].velocidade = velocidadeInicial;
     }
 
+    free(line);
     return lista_aresta;
 }
 
@@ -49,8 +60,21 @@ void aresta_exibe(Aresta *aresta, int quantidadeArestas){
     return;
 }
 
+void aresta_imprime(Aresta* a){
+    printf("<%d,%d> ", a->origem+1, a->destino+1);
+}
 
 void aresta_free(Aresta *arestas){
     free(arestas);
 }
 
+Aresta* aresta_constroi(int origem, int destino, double distancia, double velocidade){
+    Aresta* nova = malloc(sizeof(Aresta));
+
+    nova->origem = origem;
+    nova->destino = destino;
+    nova->distancia = distancia;
+    nova->velocidade = velocidade;
+
+    return nova;
+}
