@@ -1,14 +1,11 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include"PQ.h"
-#include"aresta.h"
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "PQ.h"
+#include "aresta.h"
+#include "grafo.h"
 
 FILE* utility_openFile(char *nameFile, char *action);
-
-
-
 
 int main(int argc, char *argv[]){
 
@@ -28,21 +25,18 @@ int main(int argc, char *argv[]){
     fgets(linha, 10,inputFile);  
     int velocidadeInicial = atoi(linha);          //Velocidade média inicial
 
-    Aresta *lista_arestas = aresta_LeArquivo(inputFile, numbAresta, velocidadeInicial);
-    aresta_exibe(lista_arestas, numbAresta);
+    //aresta_exibe(lista_arestas, numbAresta);
     
+    Grafo* g = grafo_LeArquivo(inputFile, numbAresta, numbVertice, velocidadeInicial);
+    grafo_exibe(g);
 
-
-
-
-    aresta_free(lista_arestas);
+    dijkstra(g, nodeOrigem, nodeDestino);    
+    
+   // aresta_free(lista_arestas);
+    grafo_free(g);
     fclose(inputFile);
     return 0;
 }
-
-
-
-
 
 
 FILE* utility_openFile(char *nameFile, char *action){
