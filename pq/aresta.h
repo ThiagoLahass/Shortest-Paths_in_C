@@ -1,6 +1,9 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#ifndef ARESTA_H
+#define ARESTA_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct aresta Aresta;
 
@@ -11,7 +14,9 @@ typedef struct aresta Aresta;
  * Input:  ponteiro para lista de structs Aresta, posição da struct
  * Output: atributo origem da struct
  */
-int aresta_retornaOrigem(Aresta *aresta, int posicao);
+//int aresta_retornaOrigem(Aresta *aresta, int posicao);
+
+int aresta_retornaOrigem(Aresta* aresta);
 /* 
  * Função que retorna atributo destino da struct 
  * Pré-condição: ponteiro para lista de structs aresta, válida
@@ -19,7 +24,9 @@ int aresta_retornaOrigem(Aresta *aresta, int posicao);
  * Input:  ponteiro para lista de structs Aresta, posição da struct
  * Output: atributo destino da struct
  */
-int aresta_retornaDestino(Aresta *aresta, int posicao);
+//int aresta_retornaDestino(Aresta *aresta, int posicao);
+
+int aresta_retornaDestino(Aresta* aresta);
 
 /* 
  * Função que retorna atributo Distância da struct 
@@ -28,7 +35,9 @@ int aresta_retornaDestino(Aresta *aresta, int posicao);
  * Input:  ponteiro para lista de structs Aresta, posição da struct
  * Output: atributo Distância da struct
  */
-double aresta_retornaDistancia(Aresta *aresta, int posicao);
+//double aresta_retornaDistancia(Aresta *aresta, int posicao);
+
+double aresta_retornaDistancia(Aresta* aresta);
 
 /* 
  * Função que retorna atributo Velocidade da struct 
@@ -37,9 +46,8 @@ double aresta_retornaDistancia(Aresta *aresta, int posicao);
  * Input:  ponteiro para lista de structs Aresta, posição da struct
  * Output: atributo Velocidade da struct
  */
-double aresta_retornaVelocidade(Aresta *aresta, int posicao);
-
-
+//double aresta_retornaVelocidade(Aresta *aresta, int posicao);
+double aresta_retornaVelocidade(Aresta* aresta);
 
 /* 
  * Função que lê arquivo e retorna lista de structs Aresta preenchida 
@@ -57,7 +65,11 @@ Aresta* aresta_LeArquivo(FILE *file, int quantidadeArestas, double velocidadeIni
  * Input: lista de structs Aresta preenchida, quantidade de Arestas
  * Output: nenhum
  */
-void aresta_exibe(Aresta *aresta, int quantidadeArestas);
+//void aresta_exibe(Aresta *aresta, int quantidadeArestas);
+
+//void aresta_exibe(Aresta *aresta, int quantidadeArestas);
+
+void aresta_imprime(Aresta* a);
 
 /* 
  * Função que libera lista de structs Aresta 
@@ -66,7 +78,10 @@ void aresta_exibe(Aresta *aresta, int quantidadeArestas);
  * Input: lista de structs Aresta preenchida
  * Output: nenhum
  */
-void aresta_free(Aresta *arestas);
+void aresta_free(Aresta* arestas);
 
+Aresta* aresta_constroi(int origem, int destino, double distancia, double velocidade);
+
+#endif
 
 
