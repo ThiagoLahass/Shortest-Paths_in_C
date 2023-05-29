@@ -19,17 +19,17 @@ DIR_RESP_4=./resposta/saida100.csv
 $(PROJ_NAME): main.o aresta.o PQ.o grafo.o
 	@ gcc -o $(PROJ_NAME) main.o aresta.o PQ.o grafo.o -lm
 
-main.o: pq/main.c
-	@ gcc -o main.o pq/main.c $(CC_FLAGS)
+main.o: main.c
+	@ gcc -o main.o main.c $(CC_FLAGS)
 
-aresta.o: pq/aresta.c
-	@ gcc -o aresta.o pq/aresta.c $(CC_FLAGS)
+aresta.o: aresta.c
+	@ gcc -o aresta.o aresta.c $(CC_FLAGS)
 
-PQ.o: pq/PQ.c
-	@ gcc -o PQ.o pq/PQ.c $(CC_FLAGS)
+PQ.o: PQ.c
+	@ gcc -o PQ.o PQ.c $(CC_FLAGS)
 
-grafo.o : pq/grafo.c
-	@ gcc -o grafo.o pq/grafo.c $(CC_FLAGS)
+grafo.o : grafo.c
+	@ gcc -o grafo.o grafo.c $(CC_FLAGS)
 
 
 clean:
