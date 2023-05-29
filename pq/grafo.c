@@ -67,7 +67,6 @@ void dijkstra(Grafo* g,  int origem, int destino){
     int* verticesMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1));
     int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
 
-
     for(int i=0; i<=g->quantidadeVertices; i++){
         distanciaOrigem[i] = INFINITY;
         verticesMenorCaminho[i] = -1;
@@ -76,95 +75,22 @@ void dijkstra(Grafo* g,  int origem, int destino){
 
     distanciaOrigem[origem] = 0.0;
 
-
-    printf("\nv =         ");
-    for(int i=1; i<=g->quantidadeVertices; i++){
-        printf("%-20d ", i );
-    }
-    printf("\nDistTo[] =  ");
-    for(int i=1; i<=g->quantidadeVertices; i++){
-        printf("%-20f ", distanciaOrigem[i]);
-    }
-    printf("\nEdgeTo[] =  ");
-    for(int i=1; i<=g->quantidadeVertices; i++){
-        printf("%-20d ", verticesMenorCaminho[i]);
-    }
-    printf("\nJaDef[] =   ");
-    for(int i=1; i<=g->quantidadeVertices; i++){
-        printf("%-20d ", verticesJaComMenorCaminho[i]);
-    }
-    printf("\n");
-
-
     PQ* fila = PQ_init(g->quantidadeVertices);
     PQ_insert(fila, origem, distanciaOrigem[origem]);
 
 
     while(!PQ_empty(fila)){
-        PQ_imprime(fila);
         int vertice = PQ_delmin(fila);
         verticesJaComMenorCaminho[vertice] = 1; //Define que esse vertice ja possui o menor caminho definido
-        printf("Vertice (del_min) = %d\n\n", vertice);
-        printf("PQ is empty? : %d\n", PQ_empty(fila));
-
-        printf("\nAntes de relaxar:\n");
-        PQ_imprime(fila);
-
-
-        printf("\nv =         ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", i );
-        }
-        printf("\nDistTo[] =  ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20f ", distanciaOrigem[i]);
-        }
-        printf("\nEdgeTo[] =  ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", verticesMenorCaminho[i]);
-        }
-        printf("\nJaDef[] =   ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", verticesJaComMenorCaminho[i]);
-        }
-        printf("\n\n");
-
 
         for(No* p = g->lista[vertice]; p!=NULL; p = p->prox){
-            aresta_imprime(p->a);
             if( !verticesJaComMenorCaminho[aresta_retornaDestino(p->a)] ){
-                printf("\nRelaxando aresta %d -> %d ...\n", aresta_retornaOrigem(p->a), aresta_retornaDestino(p->a));
                 grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
-                PQ_imprime(fila);
-            }
-            else{
-                printf("Destino ja possui menor caminho definido!!!\n");
             }
         }
-
-        printf("\nDepois de relaxar:\n");
-        PQ_imprime(fila);
-
-        printf("\nv =         ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", i );
-        }
-        printf("\nDistTo[] =  ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20f ", distanciaOrigem[i]);
-        }
-        printf("\nEdgeTo[] =  ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", verticesMenorCaminho[i]);
-        }
-        printf("\nJaDef[] =   ");
-        for(int i=1; i<=g->quantidadeVertices; i++){
-            printf("%-20d ", verticesJaComMenorCaminho[i]);
-        }
-        printf("\n\n");
     }
 
-    // grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
+    grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
     free(distanciaOrigem);
     free(verticesMenorCaminho);
     PQ_finish(fila);
@@ -174,21 +100,10 @@ void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verti
     int destino = aresta_retornaDestino(a);
     double distancia = aresta_retornaDistancia(a), velocidade = aresta_retornaVelocidade(a); 
 
-    printf("Vertice (origem?) = %d\n", vertice);
-    printf("Destino: %d\n", destino);
-    printf("Distancia: %f\n", distancia);
-
-    printf("\ndistanciaOrigem[destino] = %f\n", distanciaOrigem[destino]);
-    printf("\ndistanciaOrigem[vertice] = %f\n", distanciaOrigem[vertice]);
-    printf("\ndistancia = %f\n", distancia);
-    printf("\ndistanciaOrigem[vertice] + distancia = %f\n", distanciaOrigem[vertice] + distancia);
-
     if(distanciaOrigem[destino] > (distanciaOrigem[vertice] + distancia)){
-        printf("\ndistanciaOrigem[destino] > (distanciaOrigem[vertice] + distancia)\n");
         distanciaOrigem[destino] = distanciaOrigem[vertice] + distancia;
         verticesMenorCaminho[destino] = vertice;
 
-        printf("PQ_contains %d ?: %d \n", destino, PQ_contains(fila, destino));
         if(PQ_contains(fila, destino)) PQ_decrease_key(fila, destino, distanciaOrigem[destino]);
         else PQ_insert(fila, destino, distanciaOrigem[destino]);
     }
@@ -196,9 +111,14 @@ void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verti
 
 
 void grafo_exibeMenorCaminho(int* verticesMenorCaminho, int quantidadeVertices, int origem){
-    printf("\n\n %d", origem);
-    for(int i=0; i<quantidadeVertices; i++){
-        printf(" %d ", verticesMenorCaminho[i]+1);
+    printf("\nOrigem: %d", origem);
+    printf("\nv =         ");
+    for(int i=1; i<=quantidadeVertices; i++){
+        printf("%-10d ", i );
+    }
+    printf("\nEdgeTo[] =  ");
+    for(int i=1; i<=quantidadeVertices; i++){
+        printf("%-10d ", verticesMenorCaminho[i]);
     }
     printf("\n\n");
 }

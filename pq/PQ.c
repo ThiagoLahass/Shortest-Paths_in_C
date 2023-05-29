@@ -47,8 +47,6 @@ PQ* PQ_init(int maxN) {
 }
 
 void PQ_insert(PQ* f, int id, double value) {
-
-    printf("\n\nInserindo elemento %d, com peso %f, na fila...\n\n", id, value);
     f->N++;
     Item novo; novo.id = id; novo.value = value; 
     
@@ -70,14 +68,8 @@ Item PQ_min(PQ* f) {
 }
 
 void PQ_decrease_key(PQ* f, int id, double value) {
-    // printf("Decreasing key...\n");
     int i = f->map[id];
-    // printf("i = %d\n", i);
-    // printf("Id = %d\n", id);
-    // printf("Value = %f\n", value);
     value(f->v[i]) = value;
-    // printf("value(f->v[i]) = %f\n", value(f->v[i]));
-    // printf("Fix_up...\n");
     fix_up(f, i);
 }
 
