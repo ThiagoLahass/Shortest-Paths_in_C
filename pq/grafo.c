@@ -79,11 +79,6 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
     return g;
 }
 
-
-// distanciaOrigem -- > tempoDesdeOrigem
-// verticesJaComMenorCaminho -- > verticesJaComMenorTempo
-// verticesMenorCaminho -- > verticesMenorTempo
-
 void dijkstra(Grafo* g, int* verticesMenorTempo, int origem, int destino){
     double* tempoDesdeOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
     int* verticesJaComMenorTempo = malloc(sizeof(int)*(g->quantidadeVertices+1));
