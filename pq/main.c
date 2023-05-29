@@ -28,9 +28,36 @@ int main(int argc, char *argv[]){
     Grafo* g = grafo_LeArquivo(inputFile, numbAresta, numbVertice, velocidadeInicial);
     grafo_exibe(g);
 
-    dijkstra(g, nodeOrigem, nodeDestino);
+
+    int* verticesMenoresCaminhos = calloc(numbVertice+1, sizeof(int));  // Vetor auxiliar para salvar os caminhos calculados por dijkstra
+    int* caminhoPercorrido = calloc(numbVertice+1, sizeof(int));        // Vetor para salvar o caminho percorrido
+    double distanciaPercorrida = 0;                                     // Distancia percorrida (m)
+    double tempoGasto = 0;                                              // Tempo gasto (s)
+
+    dijkstra(g, caminhoPercorrido, nodeOrigem, nodeDestino);
+
+    grafo_exibeMenorCaminho(verticesMenoresCaminhos, numbVertice, nodeOrigem);
+
+    /*
+    FORMATO ATUALIZAÇÃO:
+    Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
+    "tempo;origem;destino;velocidade"
+    */
+
+    fgets(linha, 50, inputFile);  
+    int tempo = atoi(strtok(linha,";"));            //tempo
+    nodeOrigem  = atoi(strtok(NULL,";"));           //nó de origem
+    nodeDestino = atoi(strtok(NULL,";"));           //nó de destino
+    int novaVelocidade = atoi(strtok(NULL,";"));    //nova Velocidade
+
+    printf("tempo : %d\n", tempo);
+    printf("nodeOrigem : %d\n", nodeOrigem);
+    printf("nodeDestino : %d\n", nodeDestino);
+    printf("novaVelocidade : %d\n", novaVelocidade);
     
     grafo_free(g);
+    free(verticesMenoresCaminhos);
+    free(caminhoPercorrido);
     fclose(inputFile);
     return 0;
 }

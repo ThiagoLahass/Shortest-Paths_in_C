@@ -14,7 +14,7 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
 
 void grafo_exibe(Grafo* g);
 
-void dijkstra(Grafo* g,  int origem, int destino);
+void dijkstra(Grafo* g, int* verticesMenorCaminho, int origem, int destino);
 
 void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verticesMenorCaminho, int vertice);
 

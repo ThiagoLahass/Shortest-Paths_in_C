@@ -22,7 +22,7 @@ Grafo* grafo_constroi(int quantidadeVertices){
     novo->lista = malloc(sizeof(No*)*(quantidadeVertices+1));
     for(int i=0; i<=quantidadeVertices; i++) novo->lista[i] = NULL;
     novo->quantidadeVertices = quantidadeVertices;
-    
+
     return novo;
 }
 
@@ -63,9 +63,8 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
     return g;
 }
 
-void dijkstra(Grafo* g,  int origem, int destino){
+void dijkstra(Grafo* g, int* verticesMenorCaminho, int origem, int destino){
     double* distanciaOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
-    int* verticesMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1));
     int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
 
     for(int i=0; i<=g->quantidadeVertices; i++){
@@ -91,9 +90,7 @@ void dijkstra(Grafo* g,  int origem, int destino){
         }
     }
 
-    grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
     free(distanciaOrigem);
-    free(verticesMenorCaminho);
     free(verticesJaComMenorCaminho);
     PQ_finish(fila);
 }
