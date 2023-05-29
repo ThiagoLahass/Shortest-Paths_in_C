@@ -61,7 +61,7 @@ void aresta_exibe(Aresta *aresta, int quantidadeArestas){
 }
 
 void aresta_imprime(Aresta* a){
-    printf("<%d,%d> ", a->origem+1, a->destino+1);
+    printf("<(%d,%d) d = %f, v = %f > ", a->origem, a->destino, a->distancia, a->velocidade);
 }
 
 void aresta_free(Aresta *arestas){

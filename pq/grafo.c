@@ -19,10 +19,9 @@ struct grafo{
 
 Grafo* grafo_constroi(int quantidadeVertices){
     Grafo* novo = malloc(sizeof(Grafo));   
-    novo->lista = malloc(sizeof(No*)*quantidadeVertices);
-    for(int i=0; i<quantidadeVertices; i++) novo->lista[i] = NULL;
+    novo->lista = malloc(sizeof(No*)*quantidadeVertices+1);
+    for(int i=0; i<=quantidadeVertices; i++) novo->lista[i] = NULL;
     novo->quantidadeVertices = quantidadeVertices;
-    printf("%d\n", quantidadeVertices);
     return novo;
 }
 
@@ -48,43 +47,103 @@ void grafo_adicionaAresta(Grafo* g, Aresta* a, int origem){
 
 Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices, double velocidadeInicial){
     Grafo* g = grafo_constroi(quantidadeVertices);
-    char *line = malloc(50*sizeof(char)); //recebe todos os dados de uma linha
+    char *line = malloc(50*sizeof(char));  //recebe todos os dados de uma linha
     size_t len = 50;                       //somente usado na função getline
 
     for(int i=0; i<quantidadeArestas && ((getline(&line, &len, file)) != -1); i++){
-        int origem        = atoi(strtok(line, ";")) - 1; 
-        int destino       = atoi(strtok(NULL, ";")) - 1;
+        int origem        = atoi(strtok(line, ";")); 
+        int destino       = atoi(strtok(NULL, ";"));
         double distancia  = atof(strtok(NULL, ";"));
         
         Aresta* a = aresta_constroi(origem, destino, distancia, velocidadeInicial); 
-        grafo_adicionaAresta(g, a, origem); 
+        grafo_adicionaAresta(g, a, origem);
     }
     free(line);
     return g;
 }
 
 void dijkstra(Grafo* g,  int origem, int destino){
-    double* distanciaOrigem = malloc(sizeof(double)*g->quantidadeVertices);
-    int* verticesMenorCaminho = malloc(sizeof(int)*g->quantidadeVertices); 
+    double* distanciaOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
+    int* verticesMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
 
-    for(int i=0; i<g->quantidadeVertices; i++){
+    for(int i=0; i<=g->quantidadeVertices; i++){
         distanciaOrigem[i] = INFINITY;
         verticesMenorCaminho[i] = -1;
     }
 
-    distanciaOrigem[origem] = 0.0; 
+    distanciaOrigem[origem] = 0.0;
+
+
+    printf("\nv =         ");
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        printf("%-20d ", i );
+    }
+    printf("\nDistTo[] =  ");
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        printf("%-20f ", distanciaOrigem[i]);
+    }
+    printf("\nEdgeTo[] =  ");
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        printf("%-20d ", verticesMenorCaminho[i]);
+    }
+    printf("\n");
+
 
     PQ* fila = PQ_init(g->quantidadeVertices);
     PQ_insert(fila, origem, distanciaOrigem[origem]);
-    PQ_imprime(fila);
+
 
     while(!PQ_empty(fila)){
-        int vertice = PQ_delmin(fila); 
-        for(No* p = g->lista[vertice]; p!=NULL; p = p->prox) grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
-        //PQ_imprime(fila);
+        PQ_imprime(fila);
+        int vertice = PQ_delmin(fila);
+        printf("Vertice (del_min) = %d\n\n", vertice);
+        printf("PQ is empty? : %d\n", PQ_empty(fila));
+
+        printf("\nAntes de relaxar:\n");
+        PQ_imprime(fila);
+
+
+        printf("\nv =         ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", i );
+        }
+        printf("\nDistTo[] =  ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20f ", distanciaOrigem[i]);
+        }
+        printf("\nEdgeTo[] =  ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", verticesMenorCaminho[i]);
+        }
+        printf("\n\n");
+
+
+        for(No* p = g->lista[vertice]; p!=NULL; p = p->prox){
+            aresta_imprime(p->a);
+            printf("\nRelaxando aresta %d -> %d ...\n", aresta_retornaOrigem(p->a), aresta_retornaDestino(p->a));
+            grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
+            PQ_imprime(fila);
+        }
+
+        printf("\nDepois de relaxar:\n");
+        PQ_imprime(fila);
+
+        printf("\nv =         ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", i );
+        }
+        printf("\nDistTo[] =  ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20f ", distanciaOrigem[i]);
+        }
+        printf("\nEdgeTo[] =  ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", verticesMenorCaminho[i]);
+        }
+        printf("\n\n");
     }
 
-    grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
+    // grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
     free(distanciaOrigem);
     free(verticesMenorCaminho);
     PQ_finish(fila);
@@ -94,10 +153,21 @@ void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verti
     int destino = aresta_retornaDestino(a);
     double distancia = aresta_retornaDistancia(a), velocidade = aresta_retornaVelocidade(a); 
 
+    printf("Vertice (origem?) = %d\n", vertice);
+    printf("Destino: %d\n", destino);
+    printf("Distancia: %f\n", distancia);
+
+    printf("\ndistanciaOrigem[destino] = %f\n", distanciaOrigem[destino]);
+    printf("\ndistanciaOrigem[vertice] = %f\n", distanciaOrigem[vertice]);
+    printf("\ndistancia = %f\n", distancia);
+    printf("\ndistanciaOrigem[vertice] + distancia = %f\n", distanciaOrigem[vertice] + distancia);
+
     if(distanciaOrigem[destino] > (distanciaOrigem[vertice] + distancia)){
+        printf("\ndistanciaOrigem[destino] > (distanciaOrigem[vertice] + distancia)\n");
         distanciaOrigem[destino] = distanciaOrigem[vertice] + distancia;
         verticesMenorCaminho[destino] = vertice;
 
+        printf("PQ_contains %d ?: %d \n", destino, PQ_contains(fila, destino));
         if(PQ_contains(fila, destino)) PQ_decrease_key(fila, destino, distanciaOrigem[destino]);
         else PQ_insert(fila, destino, distanciaOrigem[destino]);
     }
@@ -113,8 +183,9 @@ void grafo_exibeMenorCaminho(int* verticesMenorCaminho, int quantidadeVertices, 
 }
 
 void grafo_exibe(Grafo* g){
-    for(int i=0; i<g->quantidadeVertices; i++){
-        printf("Vertice %d: ", i+1);
+    printf("%d\n", g->quantidadeVertices);
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        printf("Vertice %d: ", i);
         
         for(No* p = g->lista[i]; p!=NULL; p = p->prox){
             aresta_imprime(p->a);
