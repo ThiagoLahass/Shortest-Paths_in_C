@@ -22,6 +22,7 @@ Grafo* grafo_constroi(int quantidadeVertices){
     novo->lista = malloc(sizeof(No*)*(quantidadeVertices+1));
     for(int i=0; i<=quantidadeVertices; i++) novo->lista[i] = NULL;
     novo->quantidadeVertices = quantidadeVertices;
+    
     return novo;
 }
 
