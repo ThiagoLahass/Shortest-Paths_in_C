@@ -29,4 +29,7 @@ rmpromper: clean
 
 run:
 	./$(PROJ_NAME) ./entrada/entrada7.csv saida.txt
+
+val:
+	valgrind --leak-check=full ./$(PROJ_NAME) ./entrada/entrada7.csv saida.txt
 	

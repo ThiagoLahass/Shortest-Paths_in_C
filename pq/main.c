@@ -25,14 +25,11 @@ int main(int argc, char *argv[]){
     fgets(linha, 10,inputFile);  
     int velocidadeInicial = atoi(linha);          //Velocidade média inicial
 
-    // aresta_exibe(lista_arestas, numbAresta);
-    
     Grafo* g = grafo_LeArquivo(inputFile, numbAresta, numbVertice, velocidadeInicial);
     grafo_exibe(g);
 
     dijkstra(g, nodeOrigem, nodeDestino);
     
-   // aresta_free(lista_arestas);
     grafo_free(g);
     fclose(inputFile);
     return 0;

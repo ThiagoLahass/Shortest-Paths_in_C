@@ -19,7 +19,7 @@ struct grafo{
 
 Grafo* grafo_constroi(int quantidadeVertices){
     Grafo* novo = malloc(sizeof(Grafo));   
-    novo->lista = malloc(sizeof(No*)*quantidadeVertices+1);
+    novo->lista = malloc(sizeof(No*)*(quantidadeVertices+1));
     for(int i=0; i<=quantidadeVertices; i++) novo->lista[i] = NULL;
     novo->quantidadeVertices = quantidadeVertices;
     return novo;
@@ -93,6 +93,7 @@ void dijkstra(Grafo* g,  int origem, int destino){
     grafo_exibeMenorCaminho(verticesMenorCaminho, g->quantidadeVertices, origem);
     free(distanciaOrigem);
     free(verticesMenorCaminho);
+    free(verticesJaComMenorCaminho);
     PQ_finish(fila);
 }
 
@@ -136,7 +137,7 @@ void grafo_exibe(Grafo* g){
 }
 
 void grafo_free(Grafo* g){
-    for(int i=0; i<g->quantidadeVertices; i++){
+    for(int i=0; i<=g->quantidadeVertices; i++){
         No* p = g->lista[i];
         No* temp = NULL;
 
