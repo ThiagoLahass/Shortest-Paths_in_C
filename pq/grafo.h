@@ -14,13 +14,13 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
 
 void grafo_exibe(Grafo* g);
 
-void dijkstra(Grafo* g, int* verticesMenorCaminho, int origem, int destino);
+void dijkstra(Grafo* g, int* verticesMenorTempo, int origem, int destino);
 
-void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verticesMenorCaminho, int vertice);
+void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verticesMenorTempo, int vertice);
 
-void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorCaminho, int numVertices, int destino );
+void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorTempo, int numVertices, int destino );
 
-void grafo_exibeEdgeTo(int* verticesMenorCaminho, int quantidadeVertices, int origem);
+void grafo_exibeEdgeTo(int* verticesMenorTempo, int quantidadeVertices, int origem);
 
 void grafo_exibeMenorCaminho(int* caminhoAPercorrer, int quantidadeVertices);
 

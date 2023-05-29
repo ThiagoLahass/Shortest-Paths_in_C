@@ -33,9 +33,9 @@ int main(int argc, char *argv[]){
     // grafo_exibe(g);
 
 
-    int* verticesMenoresCaminhos = calloc(numbVertice+1, sizeof(int));      // Vetor auxiliar para salvar os caminhos calculados por dijkstra
+    int* verticesMenorTempo = calloc(numbVertice+1, sizeof(int));           // Vetor auxiliar para salvar os caminhos calculados por dijkstra
     int* caminhoPercorrido = calloc(numbVertice, sizeof(int));              // Vetor para salvar o caminho percorrido
-    int* vetorAuxCaminhoAPercorrer = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho que deveria ser percorrido se nao houvesse mais atualizacoes
+    int* menorCaminhoAtual = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho que deveria ser percorrido se nao houvesse mais atualizacoes
     double distanciaPercorrida = 0;                                         // Distancia percorrida (m)
     double tempoGasto = 0;                                                  // Tempo gasto (s)
     
@@ -56,41 +56,29 @@ int main(int argc, char *argv[]){
         Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
         "tempo;origem;destino;velocidade"
         */
-
         tempoProxAtualizacao    = atof(strtok(linha,";"));      //tempo
         arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
         arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
         novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
-
-        printf("\ntempo : %f\n", tempoProxAtualizacao);
-        printf("arestaOrigemAtualizacao : %d\n", arestaOrigemAtualizacao);
-        printf("arestaDestinoAtualizacao : %d\n", arestaDestinoAtualizacao);
-        printf("novaVelocidade : %f\n\n", novaVelocidade);
     }
     else{
         flagHaAtualizacao = 0;
     }
 
-    dijkstra(g, verticesMenoresCaminhos, nodeOrigem, nodeDestino);
-    grafo_geraMenorCaminho( vetorAuxCaminhoAPercorrer, verticesMenoresCaminhos, numbVertice, nodeDestino );
-    grafo_exibeMenorCaminho( vetorAuxCaminhoAPercorrer, numbVertice);
+    dijkstra(g, verticesMenorTempo, nodeOrigem, nodeDestino);
+    grafo_geraMenorCaminho( menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino );
 
     while ( nodeAtual != nodeDestino ){
 
         if( flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao ){
-            count = 0;
-
             // ATUALIZAR OS DADOS
-            printf("\nATUALIZANDO DADOS...\n");
+            count = 0;
             Aresta* aresta = grafo_retornaAresta( g, arestaOrigemAtualizacao, arestaDestinoAtualizacao);
             aresta_atualizaVelocidade(aresta, novaVelocidade);
 
-            grafo_exibe(g);
-
-            // Recaucular rota a partir da localizacao
-            dijkstra(g, verticesMenoresCaminhos, nodeAtual, nodeDestino);
-            grafo_geraMenorCaminho( vetorAuxCaminhoAPercorrer, verticesMenoresCaminhos, numbVertice, nodeDestino );
-            grafo_exibeMenorCaminho( vetorAuxCaminhoAPercorrer, numbVertice);
+            // Recaucular rota a partir da localizacao atual
+            dijkstra(g, verticesMenorTempo, nodeAtual, nodeDestino);
+            grafo_geraMenorCaminho( menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino );
 
             if( fgets(linha, 50, inputFile) != NULL ){
                 /*
@@ -98,50 +86,32 @@ int main(int argc, char *argv[]){
                 Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
                 "tempo;origem;destino;velocidade"
                 */
-
                 tempoProxAtualizacao    = atof(strtok(linha,";"));      //tempo
                 arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
                 arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
                 novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
-
-                printf("\ntempo : %f\n", tempoProxAtualizacao);
-                printf("arestaOrigemAtualizacao : %d\n", arestaOrigemAtualizacao);
-                printf("arestaDestinoAtualizacao : %d\n", arestaDestinoAtualizacao);
-                printf("novaVelocidade : %f\n\n", novaVelocidade);
             }
             else{
                 flagHaAtualizacao = 0;
             }
         }
 
-        printf("numVerticesPercorridos: %d\n", numVerticesPercorridos);
-        printf("count: %d\n", count);
-
-        Aresta* arestaPercorrida = grafo_retornaAresta( g, nodeAtual, vetorAuxCaminhoAPercorrer[count+1]);
-        aresta_imprime(arestaPercorrida);
+        Aresta* arestaPercorrida = grafo_retornaAresta( g, nodeAtual, menorCaminhoAtual[count+1]);
 
         double tempoAresta = aresta_retornaTempoPercurso(arestaPercorrida);
         double distanciaAresta = aresta_retornaDistancia(arestaPercorrida);
-        printf("\nTempo de percurso: %f\n", tempoAresta);
-        printf("Distancia de percurso: %f\n\n", distanciaAresta);
 
         tempoGasto += tempoAresta;
         distanciaPercorrida += distanciaAresta;
 
-        printf("\nTempo de percurso total atual: %f\n", tempoGasto);
-        printf("Distancia de percurso total atual: %f\n\n", distanciaPercorrida);
-
         caminhoPercorrido[numVerticesPercorridos] = nodeAtual;
-        nodeAtual = vetorAuxCaminhoAPercorrer[count+1];
+        nodeAtual = menorCaminhoAtual[count+1];
         numVerticesPercorridos++;
         count++;
     }
-
     caminhoPercorrido[numVerticesPercorridos] = nodeAtual;
 
-
     //=======================SAIDA===========================
-
     FILE* outputFile = utility_openFile(nameOutputFile,"w");
 
     //Caminho Percorrido
@@ -154,21 +124,20 @@ int main(int argc, char *argv[]){
     fprintf(outputFile, "\n");
 
     //Distancia em km
-    fprintf(outputFile, "%f\n", distanciaPercorrida/1000);
+    fprintf(outputFile, "%g\n", distanciaPercorrida/1000);
 
     //Tempo no formato HH:MM:SS.fff, onde “.fff” representam os milisseegundos.
     int horas, minutos;
     double segundos;
     conversor_SEGUNDOS_para_HH_M_SSfff(tempoGasto, &horas, &minutos, &segundos);
-    fprintf(outputFile, "%d:%d:%f\n", horas, minutos, segundos);
+    fprintf(outputFile, "%02d:%02d:%g\n", horas, minutos, segundos);
 
     //=========================FIM SAIDA========================
 
-
     grafo_free(g);
-    free(verticesMenoresCaminhos);
+    free(verticesMenorTempo);
     free(caminhoPercorrido);
-    free(vetorAuxCaminhoAPercorrer);
+    free(menorCaminhoAtual);
     fclose(inputFile);
     fclose(outputFile);
 

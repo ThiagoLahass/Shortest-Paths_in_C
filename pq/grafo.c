@@ -79,56 +79,60 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
     return g;
 }
 
-void dijkstra(Grafo* g, int* verticesMenorCaminho, int origem, int destino){
-    double* distanciaOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
-    int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1));
+
+// distanciaOrigem -- > tempoDesdeOrigem
+// verticesJaComMenorCaminho -- > verticesJaComMenorTempo
+// verticesMenorCaminho -- > verticesMenorTempo
+
+void dijkstra(Grafo* g, int* verticesMenorTempo, int origem, int destino){
+    double* tempoDesdeOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
+    int* verticesJaComMenorTempo = malloc(sizeof(int)*(g->quantidadeVertices+1));
 
     for(int i=0; i<=g->quantidadeVertices; i++){
-        distanciaOrigem[i] = INFINITY;
-        verticesMenorCaminho[i] = -1;
-        verticesJaComMenorCaminho[i] = 0;
+        tempoDesdeOrigem[i] = INFINITY;
+        verticesMenorTempo[i] = -1;
+        verticesJaComMenorTempo[i] = 0;
     }
 
-    distanciaOrigem[origem] = 0.0;
+    tempoDesdeOrigem[origem] = 0.0;
 
     PQ* fila = PQ_init(g->quantidadeVertices);
-    PQ_insert(fila, origem, distanciaOrigem[origem]);
-
+    PQ_insert(fila, origem, tempoDesdeOrigem[origem]);
 
     while(!PQ_empty(fila)){
         int vertice = PQ_delmin(fila);
-        verticesJaComMenorCaminho[vertice] = 1; //Define que esse vertice ja possui o menor caminho definido
+        verticesJaComMenorTempo[vertice] = 1; //Define que esse vertice ja possui o menor caminho definido
 
         for(No* p = g->lista[vertice]; p!=NULL; p = p->prox){
-            if( !verticesJaComMenorCaminho[aresta_retornaDestino(p->a)] ){
-                grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
+            if( !verticesJaComMenorTempo[aresta_retornaDestino(p->a)] ){
+                grafo_relaxaAresta(p->a, fila, tempoDesdeOrigem, verticesMenorTempo, vertice);
             }
         }
     }
 
-    free(distanciaOrigem);
-    free(verticesJaComMenorCaminho);
+    free(tempoDesdeOrigem);
+    free(verticesJaComMenorTempo);
     PQ_finish(fila);
 }
 
-void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verticesMenorCaminho, int vertice){
+void grafo_relaxaAresta(Aresta* a, PQ* fila, double* tempoDesdeOrigem, int* verticesMenorTempo, int vertice){
     int destino = aresta_retornaDestino(a);
-    double distancia = aresta_retornaDistancia(a), velocidade = aresta_retornaVelocidade(a); 
+    double tempo = aresta_retornaTempoPercurso(a);
 
-    if(distanciaOrigem[destino] > (distanciaOrigem[vertice] + distancia)){
-        distanciaOrigem[destino] = distanciaOrigem[vertice] + distancia;
-        verticesMenorCaminho[destino] = vertice;
+    if(tempoDesdeOrigem[destino] > (tempoDesdeOrigem[vertice] + tempo)){
+        tempoDesdeOrigem[destino] = tempoDesdeOrigem[vertice] + tempo;
+        verticesMenorTempo[destino] = vertice;
 
-        if(PQ_contains(fila, destino)) PQ_decrease_key(fila, destino, distanciaOrigem[destino]);
-        else PQ_insert(fila, destino, distanciaOrigem[destino]);
+        if(PQ_contains(fila, destino)) PQ_decrease_key(fila, destino, tempoDesdeOrigem[destino]);
+        else PQ_insert(fila, destino, tempoDesdeOrigem[destino]);
     }
 }
 
-void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorCaminho, int numVertices, int destino ){
+void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorTempo, int numVertices, int destino ){
     int numVerticesPercorridos = 0;
     while( destino != -1 ){
         verticesCaminhoAPercorrer[numVerticesPercorridos] = destino;
-        destino = verticesMenorCaminho[destino];
+        destino = verticesMenorTempo[destino];
         numVerticesPercorridos++;
     }
     for(int i = numVerticesPercorridos; i < numVertices; i++ ){
@@ -138,7 +142,7 @@ void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorC
 }
 
 
-void grafo_exibeEdgeTo(int* verticesMenorCaminho, int quantidadeVertices, int origem){
+void grafo_exibeEdgeTo(int* verticesMenorTempo, int quantidadeVertices, int origem){
     printf("\nOrigem: %d", origem);
     printf("\nv =         ");
     for(int i=1; i<=quantidadeVertices; i++){
@@ -146,7 +150,7 @@ void grafo_exibeEdgeTo(int* verticesMenorCaminho, int quantidadeVertices, int or
     }
     printf("\nEdgeTo[] =  ");
     for(int i=1; i<=quantidadeVertices; i++){
-        printf("%-10d ", verticesMenorCaminho[i]);
+        printf("%-10d ", verticesMenorTempo[i]);
     }
     printf("\n\n");
 }
