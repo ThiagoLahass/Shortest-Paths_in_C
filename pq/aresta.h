@@ -49,6 +49,10 @@ double aresta_retornaDistancia(Aresta* aresta);
 //double aresta_retornaVelocidade(Aresta *aresta, int posicao);
 double aresta_retornaVelocidade(Aresta* aresta);
 
+double aresta_retornaTempoPercurso(Aresta* aresta);
+
+void aresta_atualizaVelocidade( Aresta* a, double velocidade );
+
 /* 
  * Função que lê arquivo e retorna lista de structs Aresta preenchida 
  * Pré-condição: ponteiro para arquivo válido

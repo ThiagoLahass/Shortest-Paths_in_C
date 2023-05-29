@@ -17,6 +17,22 @@ struct grafo{
     No** lista;
 };
 
+static void inverterVetor(int* vetor, int tamanho) {
+    int inicio = 0;
+    int fim = tamanho - 1;
+
+    while (inicio < fim) {
+        // Trocar os elementos de posição
+        int temp = vetor[inicio];
+        vetor[inicio] = vetor[fim];
+        vetor[fim] = temp;
+
+        // Avançar com os índices
+        inicio++;
+        fim--;
+    }
+}
+
 Grafo* grafo_constroi(int quantidadeVertices){
     Grafo* novo = malloc(sizeof(Grafo));   
     novo->lista = malloc(sizeof(No*)*(quantidadeVertices+1));
@@ -65,7 +81,7 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
 
 void dijkstra(Grafo* g, int* verticesMenorCaminho, int origem, int destino){
     double* distanciaOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
-    int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
+    int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1));
 
     for(int i=0; i<=g->quantidadeVertices; i++){
         distanciaOrigem[i] = INFINITY;
@@ -108,8 +124,21 @@ void grafo_relaxaAresta(Aresta* a, PQ* fila, double* distanciaOrigem, int* verti
     }
 }
 
+void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorCaminho, int numVertices, int destino ){
+    int numVerticesPercorridos = 0;
+    while( destino != -1 ){
+        verticesCaminhoAPercorrer[numVerticesPercorridos] = destino;
+        destino = verticesMenorCaminho[destino];
+        numVerticesPercorridos++;
+    }
+    for(int i = numVerticesPercorridos; i < numVertices; i++ ){
+        verticesCaminhoAPercorrer[i] = 0;
+    }
+    inverterVetor(verticesCaminhoAPercorrer, numVerticesPercorridos);
+}
 
-void grafo_exibeMenorCaminho(int* verticesMenorCaminho, int quantidadeVertices, int origem){
+
+void grafo_exibeEdgeTo(int* verticesMenorCaminho, int quantidadeVertices, int origem){
     printf("\nOrigem: %d", origem);
     printf("\nv =         ");
     for(int i=1; i<=quantidadeVertices; i++){
@@ -122,6 +151,16 @@ void grafo_exibeMenorCaminho(int* verticesMenorCaminho, int quantidadeVertices, 
     printf("\n\n");
 }
 
+void grafo_exibeMenorCaminho(int* caminhoAPercorrer, int quantidadeVertices){
+    for(int i=0; caminhoAPercorrer[i] != 0; i++){
+        if( caminhoAPercorrer[i] != 0 ){
+            printf("%d", caminhoAPercorrer[i]);
+            if(caminhoAPercorrer[i+1] != 0) printf(";");
+        }
+    }
+    printf("\n");
+}
+
 void grafo_exibe(Grafo* g){
     printf("%d\n", g->quantidadeVertices);
     for(int i=1; i<=g->quantidadeVertices; i++){
@@ -132,6 +171,19 @@ void grafo_exibe(Grafo* g){
         }
         printf("\n");
     }
+}
+
+Aresta* grafo_retornaAresta( Grafo* g, int origem, int destino ){
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        if( i == origem ){
+            for(No* p = g->lista[i]; p!=NULL; p = p->prox){
+                if( aresta_retornaDestino(p->a) == destino ){
+                    return p->a;
+                }
+            }
+        }
+    }
+    return NULL;
 }
 
 void grafo_free(Grafo* g){

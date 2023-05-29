@@ -33,6 +33,14 @@ double aresta_retornaDistancia(Aresta* aresta){
 double aresta_retornaVelocidade(Aresta* aresta){
     return aresta->velocidade;
 }
+double aresta_retornaTempoPercurso(Aresta* aresta){
+    double velocidade_m_s = aresta->velocidade/3.6;
+    return aresta->distancia/velocidade_m_s;
+}
+
+void aresta_atualizaVelocidade( Aresta* a, double velocidade ){
+    a->velocidade = velocidade;
+}
 
 Aresta* aresta_LeArquivo(FILE *file, int quantidadeArestas, double velocidadeInicial){
     Aresta* lista_aresta = malloc(quantidadeArestas * sizeof(Aresta));    //lista struct aresta
