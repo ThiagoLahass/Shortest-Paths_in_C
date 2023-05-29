@@ -34,9 +34,9 @@ int main(int argc, char *argv[]){
     double distanciaPercorrida = 0;                                     // Distancia percorrida (m)
     double tempoGasto = 0;                                              // Tempo gasto (s)
 
-    dijkstra(g, caminhoPercorrido, nodeOrigem, nodeDestino);
+    dijkstra(g, verticesMenoresCaminhos, nodeOrigem, nodeDestino);
 
-    grafo_exibeMenorCaminho(verticesMenoresCaminhos, numbVertice, nodeOrigem);
+    // grafo_exibeMenorCaminho(verticesMenoresCaminhos, numbVertice, nodeOrigem);
 
     /*
     FORMATO ATUALIZAÇÃO:
