@@ -64,11 +64,14 @@ Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices
 
 void dijkstra(Grafo* g,  int origem, int destino){
     double* distanciaOrigem = malloc(sizeof(double)*(g->quantidadeVertices+1));
-    int* verticesMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
+    int* verticesMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1));
+    int* verticesJaComMenorCaminho = malloc(sizeof(int)*(g->quantidadeVertices+1)); 
+
 
     for(int i=0; i<=g->quantidadeVertices; i++){
         distanciaOrigem[i] = INFINITY;
         verticesMenorCaminho[i] = -1;
+        verticesJaComMenorCaminho[i] = 0;
     }
 
     distanciaOrigem[origem] = 0.0;
@@ -86,6 +89,10 @@ void dijkstra(Grafo* g,  int origem, int destino){
     for(int i=1; i<=g->quantidadeVertices; i++){
         printf("%-20d ", verticesMenorCaminho[i]);
     }
+    printf("\nJaDef[] =   ");
+    for(int i=1; i<=g->quantidadeVertices; i++){
+        printf("%-20d ", verticesJaComMenorCaminho[i]);
+    }
     printf("\n");
 
 
@@ -96,6 +103,7 @@ void dijkstra(Grafo* g,  int origem, int destino){
     while(!PQ_empty(fila)){
         PQ_imprime(fila);
         int vertice = PQ_delmin(fila);
+        verticesJaComMenorCaminho[vertice] = 1; //Define que esse vertice ja possui o menor caminho definido
         printf("Vertice (del_min) = %d\n\n", vertice);
         printf("PQ is empty? : %d\n", PQ_empty(fila));
 
@@ -115,14 +123,23 @@ void dijkstra(Grafo* g,  int origem, int destino){
         for(int i=1; i<=g->quantidadeVertices; i++){
             printf("%-20d ", verticesMenorCaminho[i]);
         }
+        printf("\nJaDef[] =   ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", verticesJaComMenorCaminho[i]);
+        }
         printf("\n\n");
 
 
         for(No* p = g->lista[vertice]; p!=NULL; p = p->prox){
             aresta_imprime(p->a);
-            printf("\nRelaxando aresta %d -> %d ...\n", aresta_retornaOrigem(p->a), aresta_retornaDestino(p->a));
-            grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
-            PQ_imprime(fila);
+            if( !verticesJaComMenorCaminho[aresta_retornaDestino(p->a)] ){
+                printf("\nRelaxando aresta %d -> %d ...\n", aresta_retornaOrigem(p->a), aresta_retornaDestino(p->a));
+                grafo_relaxaAresta(p->a, fila, distanciaOrigem, verticesMenorCaminho, vertice);
+                PQ_imprime(fila);
+            }
+            else{
+                printf("Destino ja possui menor caminho definido!!!\n");
+            }
         }
 
         printf("\nDepois de relaxar:\n");
@@ -139,6 +156,10 @@ void dijkstra(Grafo* g,  int origem, int destino){
         printf("\nEdgeTo[] =  ");
         for(int i=1; i<=g->quantidadeVertices; i++){
             printf("%-20d ", verticesMenorCaminho[i]);
+        }
+        printf("\nJaDef[] =   ");
+        for(int i=1; i<=g->quantidadeVertices; i++){
+            printf("%-20d ", verticesJaComMenorCaminho[i]);
         }
         printf("\n\n");
     }
