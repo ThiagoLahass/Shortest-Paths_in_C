@@ -33,13 +33,13 @@ int main(int argc, char *argv[]){
     // grafo_exibe(g);
 
 
-    int* verticesMenorTempo = calloc(numbVertice+1, sizeof(int));           // Vetor auxiliar para salvar os caminhos calculados por dijkstra
-    int* caminhoPercorrido = calloc(numbVertice, sizeof(int));              // Vetor para salvar o caminho percorrido
+    int* verticesMenorTempo = calloc(numbVertice+1, sizeof(int));   // Vetor auxiliar para salvar os caminhos calculados por dijkstra
+    int* caminhoPercorrido = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho percorrido
     int* menorCaminhoAtual = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho que deveria ser percorrido se nao houvesse mais atualizacoes
-    double distanciaPercorrida = 0;                                         // Distancia percorrida (m)
-    double tempoGasto = 0;                                                  // Tempo gasto (s)
+    double distanciaPercorrida = 0;                                 // Distancia percorrida (m)
+    double tempoGasto = 0;                                          // Tempo gasto (s)
     
-    double tempoProxAtualizacao = INFINITY;                                 // Tempo da proxima atualizacao
+    double tempoProxAtualizacao = INFINITY;                         // Tempo da proxima atualizacao
     int flagHaAtualizacao = 1;
     int arestaOrigemAtualizacao = 0;
     int arestaDestinoAtualizacao = 0;
@@ -72,28 +72,32 @@ int main(int argc, char *argv[]){
 
         if( flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao ){
             // ATUALIZAR OS DADOS
-            count = 0;
-            Aresta* aresta = grafo_retornaAresta( g, arestaOrigemAtualizacao, arestaDestinoAtualizacao);
-            aresta_atualizaVelocidade(aresta, novaVelocidade);
+            
+            while ( flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao ){
+                Aresta* aresta = grafo_retornaAresta( g, arestaOrigemAtualizacao, arestaDestinoAtualizacao);
+                aresta_atualizaVelocidade(aresta, novaVelocidade);
 
-            // Recaucular rota a partir da localizacao atual
+                if( fgets(linha, 50, inputFile) != NULL ){
+                    /*
+                    FORMATO ATUALIZAÇÃO:
+                    Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
+                    "tempo;origem;destino;velocidade"
+                    */
+                    tempoProxAtualizacao    = atof(strtok(linha,";"));      //tempo
+                    arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
+                    arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
+                    novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
+                }
+                else{
+                    flagHaAtualizacao = 0;
+                }
+            }
+
+            // Recaucular rota a partir da localizacao atual apos as atualizacoes
             dijkstra(g, verticesMenorTempo, nodeAtual, nodeDestino);
             grafo_geraMenorCaminho( menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino );
 
-            if( fgets(linha, 50, inputFile) != NULL ){
-                /*
-                FORMATO ATUALIZAÇÃO:
-                Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
-                "tempo;origem;destino;velocidade"
-                */
-                tempoProxAtualizacao    = atof(strtok(linha,";"));      //tempo
-                arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
-                arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
-                novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
-            }
-            else{
-                flagHaAtualizacao = 0;
-            }
+            count = 0;
         }
 
         Aresta* arestaPercorrida = grafo_retornaAresta( g, nodeAtual, menorCaminhoAtual[count+1]);
@@ -130,7 +134,7 @@ int main(int argc, char *argv[]){
     int horas, minutos;
     double segundos;
     conversor_SEGUNDOS_para_HH_M_SSfff(tempoGasto, &horas, &minutos, &segundos);
-    fprintf(outputFile, "%02d:%02d:%g\n", horas, minutos, segundos);
+    fprintf(outputFile, "%02d:%02d:%g", horas, minutos, segundos);
 
     //=========================FIM SAIDA========================
 
