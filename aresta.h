@@ -14,6 +14,7 @@ typedef struct aresta Aresta;
  *  @param int vértice de destino
  *  @param double distância entre os vértices da aresta
  *  @param double velocidade média do caminho 
+ *  @return Aresta* aresta constrúida
  */
 Aresta* aresta_constroi(int origem, int destino, double distancia, double velocidade);
 

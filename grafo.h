@@ -9,7 +9,7 @@ typedef struct grafo Grafo;
 /** @brief Inicializa um grafo, composto pelo número de vértices e pela lista de adjacência
  * 
  *  @param int quantidadeVertices 
- *  @return Grafo* grafo
+ *  @return Grafo* grafo inicializado
 */
 Grafo* grafo_constroi(int quantidadeVertices);
 
@@ -27,6 +27,7 @@ void grafo_adicionaAresta(Grafo* g, Aresta* a, int origem);
  *  @param int número de arestas do arquivo
  *  @param int número de vértices do arquivo
  *  @param double velocidade inicial de todos os caminhos
+ *  @return Grafo* grafo construído
 */
 Grafo* grafo_LeArquivo(FILE *file, int quantidadeArestas, int quantidadeVertices, double velocidadeInicial);
 
