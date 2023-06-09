@@ -15,10 +15,8 @@ static void swap(PQ* f, int i, int j) {
 }
 
 void fix_up(PQ* f, int k) {
-    // printf("In fix_up...\n");
-    // printf(" f->v[k] = %d\n", f->v[k]);
     while (k > 1 && more(f->v[k/2], f->v[k])) {
-        // printf("While...\n");
+
         swap(f, k, k/2);
         k = k/2;
     }
