@@ -33,6 +33,14 @@ static void inverterVetor(int* vetor, int tamanho) {
     }
 }
 
+static void conversor_SEGUNDOS_para_HH_M_SSfff(double segundos, int* HH, int* MM, double* SSfff ){
+    *HH = segundos/3600;
+    segundos -= (*HH)*3600;
+    *MM = segundos/60;
+    segundos -= (*MM)*60;
+    *SSfff = segundos;
+}
+
 Grafo* grafo_constroi(int quantidadeVertices){
     Grafo* novo = malloc(sizeof(Grafo));   
     novo->lista = malloc(sizeof(No*)*(quantidadeVertices+1));
@@ -99,7 +107,7 @@ void dijkstra(Grafo* g, int* verticesMenorTempo, int origem, int destino){
         verticesJaComMenorTempo[vertice] = 1; //Define que esse vertice ja possui o menor caminho definido
 
         for(No* p = g->lista[vertice]; p!=NULL; p = p->prox){
-            if( !verticesJaComMenorTempo[aresta_retornaDestino(p->a)] ){
+            if(!verticesJaComMenorTempo[aresta_retornaDestino(p->a)]){
                 grafo_relaxaAresta(p->a, fila, tempoDesdeOrigem, verticesMenorTempo, vertice);
             }
         }
@@ -123,66 +131,51 @@ void grafo_relaxaAresta(Aresta* a, PQ* fila, double* tempoDesdeOrigem, int* vert
     }
 }
 
-void grafo_geraMenorCaminho( int* verticesCaminhoAPercorrer, int* verticesMenorTempo, int numVertices, int destino ){
+void grafo_geraMenorCaminho(int* verticesCaminhoAPercorrer, int* verticesMenorTempo, int numVertices, int destino){
     int numVerticesPercorridos = 0;
-    while( destino != -1 ){
+
+    while(destino != -1){
         verticesCaminhoAPercorrer[numVerticesPercorridos] = destino;
         destino = verticesMenorTempo[destino];
         numVerticesPercorridos++;
     }
+
     for(int i = numVerticesPercorridos; i < numVertices; i++ ){
         verticesCaminhoAPercorrer[i] = 0;
     }
+
     inverterVetor(verticesCaminhoAPercorrer, numVerticesPercorridos);
 }
 
-
-void grafo_exibeEdgeTo(int* verticesMenorTempo, int quantidadeVertices, int origem){
-    printf("\nOrigem: %d", origem);
-    printf("\nv =         ");
-    for(int i=1; i<=quantidadeVertices; i++){
-        printf("%-10d ", i );
-    }
-    printf("\nEdgeTo[] =  ");
-    for(int i=1; i<=quantidadeVertices; i++){
-        printf("%-10d ", verticesMenorTempo[i]);
-    }
-    printf("\n\n");
-}
-
-void grafo_exibeMenorCaminho(int* caminhoAPercorrer, int quantidadeVertices){
-    for(int i=0; caminhoAPercorrer[i] != 0; i++){
-        if( caminhoAPercorrer[i] != 0 ){
-            printf("%d", caminhoAPercorrer[i]);
-            if(caminhoAPercorrer[i+1] != 0) printf(";");
-        }
-    }
-    printf("\n");
-}
-
-void grafo_exibe(Grafo* g){
-    printf("%d\n", g->quantidadeVertices);
+Aresta* grafo_retornaAresta(Grafo* g, int origem, int destino){
     for(int i=1; i<=g->quantidadeVertices; i++){
-        printf("Vertice %d: ", i);
-        
-        for(No* p = g->lista[i]; p!=NULL; p = p->prox){
-            aresta_imprime(p->a);
-        }
-        printf("\n");
-    }
-}
-
-Aresta* grafo_retornaAresta( Grafo* g, int origem, int destino ){
-    for(int i=1; i<=g->quantidadeVertices; i++){
-        if( i == origem ){
+        if(i == origem){
             for(No* p = g->lista[i]; p!=NULL; p = p->prox){
-                if( aresta_retornaDestino(p->a) == destino ){
+                if(aresta_retornaDestino(p->a) == destino){
                     return p->a;
                 }
             }
         }
     }
     return NULL;
+}
+
+void grafo_geraOutput(FILE* outputFile, int numVerticesPercorridos, int* caminhoPercorrido, double distanciaPercorrida, double tempoGasto){
+    //Caminho Percorrido
+    for(int i = 0; i <= numVerticesPercorridos; i++){
+        fprintf(outputFile, "%d", caminhoPercorrido[i]);
+        if(i < numVerticesPercorridos) fprintf(outputFile,";");
+    }
+
+    fprintf(outputFile, "\n");
+
+    //Distancia em km
+    fprintf(outputFile, "%lf\n", distanciaPercorrida/1000);
+
+    //Tempo no formato HH:MM:SS.fff, onde “.fff” representam os milisseegundos.
+    int horas, minutos; double segundos;
+    conversor_SEGUNDOS_para_HH_M_SSfff(tempoGasto, &horas, &minutos, &segundos);
+    fprintf(outputFile, "%02d:%02d:%lf", horas, minutos, segundos);
 }
 
 void grafo_free(Grafo* g){
