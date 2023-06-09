@@ -7,84 +7,74 @@
 
 typedef struct aresta Aresta;
 
-/* 
- * Função que retorna atributo origem da struct 
- * Pré-condição: ponteiro para lista de structs aresta, válida
- * Pós-condição: nenhuma
- * Input:  ponteiro para lista de structs Aresta, posição da struct
- * Output: atributo origem da struct
+/**
+ *  @brief Inicializa uma aresta, composta dos vértices de origem e destino, da velocidade média e da distância
+ * 
+ *  @param int vértice de origem
+ *  @param int vértice de destino
+ *  @param double distância entre os vértices da aresta
+ *  @param double velocidade média do caminho 
  */
-//int aresta_retornaOrigem(Aresta *aresta, int posicao);
-
-int aresta_retornaOrigem(Aresta* aresta);
-/* 
- * Função que retorna atributo destino da struct 
- * Pré-condição: ponteiro para lista de structs aresta, válida
- * Pós-condição: nenhuma
- * Input:  ponteiro para lista de structs Aresta, posição da struct
- * Output: atributo destino da struct
- */
-//int aresta_retornaDestino(Aresta *aresta, int posicao);
-
-int aresta_retornaDestino(Aresta* aresta);
-
-/* 
- * Função que retorna atributo Distância da struct 
- * Pré-condição: ponteiro para lista de structs aresta, válida
- * Pós-condição: nenhuma
- * Input:  ponteiro para lista de structs Aresta, posição da struct
- * Output: atributo Distância da struct
- */
-//double aresta_retornaDistancia(Aresta *aresta, int posicao);
-
-double aresta_retornaDistancia(Aresta* aresta);
-
-/* 
- * Função que retorna atributo Velocidade da struct 
- * Pré-condição: ponteiro para lista de structs aresta, válida
- * Pós-condição: nenhuma
- * Input:  ponteiro para lista de structs Aresta, posição da struct
- * Output: atributo Velocidade da struct
- */
-//double aresta_retornaVelocidade(Aresta *aresta, int posicao);
-double aresta_retornaVelocidade(Aresta* aresta);
-
-double aresta_retornaTempoPercurso(Aresta* aresta);
-
-void aresta_atualizaVelocidade( Aresta* a, double velocidade );
-
-/* 
- * Função que lê arquivo e retorna lista de structs Aresta preenchida 
- * Pré-condição: ponteiro para arquivo válido
- * Pós-condição: lista de structs criada e preenchida
- * Input: ponteiro para arquivo, quantidade de Aresta, velocidade inicial da aresta
- * Output: lista de structs Aresta preenchida
- */
-Aresta* aresta_LeArquivo(FILE *file, int quantidadeArestas, double velocidadeInicial);
-
-/* 
- * Função que exibe lista de structs Aresta 
- * Pré-condição: lista de structs Aresta, válida
- * Pós-condição: nenhuma
- * Input: lista de structs Aresta preenchida, quantidade de Arestas
- * Output: nenhum
- */
-//void aresta_exibe(Aresta *aresta, int quantidadeArestas);
-
-//void aresta_exibe(Aresta *aresta, int quantidadeArestas);
-
-void aresta_imprime(Aresta* a);
-
-/* 
- * Função que libera lista de structs Aresta 
- * Pré-condição: lista de structs Aresta válida
- * Pós-condição: lista de structs Aresta liberada da memória
- * Input: lista de structs Aresta preenchida
- * Output: nenhum
- */
-void aresta_free(Aresta* arestas);
-
 Aresta* aresta_constroi(int origem, int destino, double distancia, double velocidade);
+
+/** 
+ * @brief Retorna o vértice de origem da aresta
+ * 
+ * @param Aresta* aresta 
+ * @return Número inteiro que simboliza o vértice
+*/
+int aresta_retornaOrigem(Aresta* a);
+
+/** 
+ * @brief Retorna o vértice de destino da aresta
+ * 
+ * @param Aresta* aresta 
+ * @return Número inteiro que simboliza o vértice
+*/
+int aresta_retornaDestino(Aresta* a);
+
+/** 
+ * @brief Retorna a distância entre vértices da aresta
+ * 
+ * @param Aresta* aresta 
+ * @return Número racional que simboliza a distância (em metros)
+*/
+double aresta_retornaDistancia(Aresta* a);
+
+
+/** 
+ * @brief Retorna a velocidade média do caminho entre os vértices
+ * 
+ * @param Aresta* aresta 
+ * @return Número racional que simboliza a velocidade média (em metros/segundo)
+*/
+double aresta_retornaVelocidade(Aresta* a);
+
+
+/** 
+ * @brief Retorna o tempo de percurso entre os vértices
+ * 
+ * @param Aresta* aresta 
+ * @return Número racional que simboliza o tempo de percurso (em segundos)
+*/
+double aresta_retornaTempoPercurso(Aresta* a);
+
+
+/**
+ *  @brief Atualiza o valor da velocidade média do caminho entre os vértices
+ * 
+ *  @param Aresta* aresta 
+ *  @param double velocidade média
+ */
+void aresta_atualizaVelocidade(Aresta* a, double velocidade);
+
+
+/**
+ *  @brief Imprime os componentes da aresta (origem, destino, distância e velocidade média)
+ * 
+ *  @param Aresta* aresta 
+ */
+void aresta_imprime(Aresta* a);
 
 #endif
 
