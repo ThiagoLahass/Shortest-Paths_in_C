@@ -8,8 +8,6 @@
 
 FILE* utility_openFile(char *nameFile, char *action);
 
-void conversor_SEGUNDOS_para_HH_M_SSfff( double segundos, int* HH, int* MM, double* SSfff );
-
 int main(int argc, char *argv[]){
 
     char* nameInputFile = argv[1];  //nome do arquivo Entrada
@@ -30,9 +28,6 @@ int main(int argc, char *argv[]){
 
     Grafo* g = grafo_LeArquivo(inputFile, numbAresta, numbVertice, velocidadeInicial);
 
-    // grafo_exibe(g);
-
-
     int* verticesMenorTempo = calloc(numbVertice+1, sizeof(int));   // Vetor auxiliar para salvar os caminhos calculados por dijkstra
     int* caminhoPercorrido = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho percorrido
     int* menorCaminhoAtual = calloc(numbVertice, sizeof(int));      // Vetor para salvar o caminho que deveria ser percorrido se nao houvesse mais atualizacoes
@@ -49,35 +44,32 @@ int main(int argc, char *argv[]){
     int numVerticesPercorridos = 0;     // Numero de vertices percorridos no total
     int count = 0;                      // Numero de vertices percorridos do caminho definido como atual
 
-
-    if( fgets(linha, 50, inputFile) != NULL ){
-        /*
-        FORMATO ATUALIZAÇÃO:
+    if(fgets(linha, 50, inputFile) != NULL){
+        /* FORMATO ATUALIZAÇÃO:
         Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
-        "tempo;origem;destino;velocidade"
-        */
-        tempoProxAtualizacao    = atof(strtok(linha,";"));      //tempo
-        arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
-        arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
-        novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
-    }
-    else{
-        flagHaAtualizacao = 0;
-    }
+        "tempo;origem;destino;velocidade"*/
 
+        tempoProxAtualizacao     = atof(strtok(linha,";"));      //tempo
+        arestaOrigemAtualizacao  = atoi(strtok(NULL,";"));       //nó de origem
+        arestaDestinoAtualizacao = atoi(strtok(NULL,";"));       //nó de destino
+        novaVelocidade           = atof(strtok(NULL,";"));       //nova Velocidade
+
+    }else flagHaAtualizacao = 0;
+  
     dijkstra(g, verticesMenorTempo, nodeOrigem, nodeDestino);
     grafo_geraMenorCaminho( menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino );
 
-    while ( nodeAtual != nodeDestino ){
+    //=======================ATUALIZAÇÕES==============================
+    while (nodeAtual != nodeDestino){
 
-        if( flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao ){
+        if(flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao){
             // ATUALIZAR OS DADOS
             
-            while ( flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao ){
+            while(flagHaAtualizacao && tempoGasto >= tempoProxAtualizacao){
                 Aresta* aresta = grafo_retornaAresta( g, arestaOrigemAtualizacao, arestaDestinoAtualizacao);
                 aresta_atualizaVelocidade(aresta, novaVelocidade);
 
-                if( fgets(linha, 50, inputFile) != NULL ){
+                if(fgets(linha, 50, inputFile) != NULL ){
                     /*
                     FORMATO ATUALIZAÇÃO:
                     Instante de tempo(s); Aresta(origem;destino); Nova velocidade media naquela aresta (em km/h)
@@ -87,20 +79,18 @@ int main(int argc, char *argv[]){
                     arestaOrigemAtualizacao = atoi(strtok(NULL,";"));       //nó de origem
                     arestaDestinoAtualizacao= atoi(strtok(NULL,";"));       //nó de destino
                     novaVelocidade          = atof(strtok(NULL,";"));       //nova Velocidade
-                }
-                else{
-                    flagHaAtualizacao = 0;
-                }
+                
+                }else flagHaAtualizacao = 0;
             }
 
-            // Recaucular rota a partir da localizacao atual apos as atualizacoes
+            // Recalcular rota a partir da localizacao atual apos as atualizacoes
             dijkstra(g, verticesMenorTempo, nodeAtual, nodeDestino);
-            grafo_geraMenorCaminho( menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino );
+            grafo_geraMenorCaminho(menorCaminhoAtual, verticesMenorTempo, numbVertice, nodeDestino);
 
             count = 0;
         }
 
-        Aresta* arestaPercorrida = grafo_retornaAresta( g, nodeAtual, menorCaminhoAtual[count+1]);
+        Aresta* arestaPercorrida = grafo_retornaAresta(g, nodeAtual, menorCaminhoAtual[count+1]);
 
         double tempoAresta = aresta_retornaTempoPercurso(arestaPercorrida);
         double distanciaAresta = aresta_retornaDistancia(arestaPercorrida);
@@ -113,31 +103,14 @@ int main(int argc, char *argv[]){
         numVerticesPercorridos++;
         count++;
     }
+
     caminhoPercorrido[numVerticesPercorridos] = nodeAtual;
 
-    //=======================SAIDA===========================
+    //=======================GERA SAÍDA==============================
     FILE* outputFile = utility_openFile(nameOutputFile,"w");
+    grafo_geraOutput(outputFile, numVerticesPercorridos, caminhoPercorrido, distanciaPercorrida, tempoGasto);
 
-    //Caminho Percorrido
-    for(int i = 0; i <= numVerticesPercorridos; i++){
-        fprintf(outputFile, "%d", caminhoPercorrido[i]);
-        if( i < numVerticesPercorridos ){
-            fprintf(outputFile,";");
-        }
-    }
-    fprintf(outputFile, "\n");
-
-    //Distancia em km
-    fprintf(outputFile, "%g\n", distanciaPercorrida/1000);
-
-    //Tempo no formato HH:MM:SS.fff, onde “.fff” representam os milisseegundos.
-    int horas, minutos;
-    double segundos;
-    conversor_SEGUNDOS_para_HH_M_SSfff(tempoGasto, &horas, &minutos, &segundos);
-    fprintf(outputFile, "%02d:%02d:%g", horas, minutos, segundos);
-
-    //=========================FIM SAIDA========================
-
+    //=======================LIBERA MEMÓRIA===========================
     grafo_free(g);
     free(verticesMenorTempo);
     free(caminhoPercorrido);
@@ -148,24 +121,15 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
-
 FILE* utility_openFile(char *nameFile, char *action){
-    //Abrir o arquivo/
-    FILE *file;
-    file = fopen(nameFile, action);
+    //Abrir o arquivo
+    FILE *file = fopen(nameFile, action);
 
-    //Testar Arquivo/
+    //Testar o arquivo
     if(file == NULL){
         printf("\n ERRo 001: Função Open_File: Erro Ao abrir arquivo\n");
         exit(0);
     }
-    return file; 
-}
 
-void conversor_SEGUNDOS_para_HH_M_SSfff( double segundos, int* HH, int* MM, double* SSfff ){
-    *HH = segundos/3600;
-    segundos -= (*HH)*3600;
-    *MM = segundos/60;
-    segundos -= (*MM)*60;
-    *SSfff = segundos;
+    return file; 
 }
